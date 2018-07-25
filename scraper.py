@@ -98,9 +98,10 @@ import sys
 
 import requests
 
-from requests.utils import urlparse
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.poolmanager import PoolManager
+from requests.packages.urllib3.util import ssl_
+
 
 class TlsAdapter(HTTPAdapter):
 
