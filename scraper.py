@@ -93,41 +93,18 @@ ua={'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, li
 
 #### READ HTML 1.0
 
-import ssl
-import sys
+with Browser("phantomjs") as browser:
+    # Optional, but make sure large enough that responsive pages don't
+    # hide elements on you...
+    browser.driver.set_window_size(1280, 1024)
 
-import requests
-
-from requests.adapters import HTTPAdapter
-from requests.packages.urllib3.poolmanager import PoolManager
-from requests.packages.urllib3.util import ssl_
-
-
-class TlsAdapter(HTTPAdapter):
-
-    def __init__(self, ssl_options=0, **kwargs):
-        self.ssl_options = ssl_options
-        super(TlsAdapter, self).__init__(**kwargs)
-
-    def init_poolmanager(self, *pool_args, **pool_kwargs):
-        ctx = ssl_.create_urllib3_context(ssl.PROTOCOL_TLS)
-        # extend the default context options, which is to disable ssl2, ssl3
-        # and ssl compression, see:
-        # https://github.com/shazow/urllib3/blob/6a6cfe9/urllib3/util/ssl_.py#L241
-        ctx.options |= self.ssl_options
-        self.poolmanager = PoolManager(*pool_args,
-                                       ssl_context=ctx,
-                                       **pool_kwargs)
-
-session = requests.session()
-# disallow tls1.0 and tls1.1, allow only tls1.2 (and newer if suported by
-# the used openssl version)
-adapter = TlsAdapter(ssl.OP_NO_TLSv1 | ssl.OP_NO_TLSv1_1)
-session.mount("https://", adapter)
-r = session.get(url)
-print(r.status_code)
-
-
+    # Open the page you want...
+    browser.visit(url)
+    # Scrape the data you like...
+    links = browser.find_by_css(".pagination-next")
+    print links
+    for link in links:
+        print link['href']
 # html = requests.get(url, verify=False)
 # soup = BeautifulSoup(html.text, 'lxml')
 
