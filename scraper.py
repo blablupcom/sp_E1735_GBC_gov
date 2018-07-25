@@ -8,7 +8,7 @@ import scraperwiki
 import urllib2
 from datetime import datetime
 from bs4 import BeautifulSoup
-
+from splinter import Browser
 
 #### FUNCTIONS 1.2
 import requests
