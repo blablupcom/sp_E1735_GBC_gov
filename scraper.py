@@ -111,7 +111,7 @@ class Tls12HttpAdapter(HTTPAdapter):
             num_pools=connections, maxsize=maxsize,
             block=block, ssl_version=ssl.PROTOCOL_TLSv1	)
 
-ssl.OPENSSL_VERSION
+print ssl.OPENSSL_VERSION
 s = requests.Session()
 s.mount('https://', Tls12HttpAdapter())
 r = s.get(url, headers=ua)
