@@ -11,5 +11,5 @@ beautifulsoup4==4.2.0
 
 lxml==3.4.4
 cssselect==0.9.1
-pyOpenSSL==17.2.0
+pyOpenSSL==18.0.0
 requests[security]
