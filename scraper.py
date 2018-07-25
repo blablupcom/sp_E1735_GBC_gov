@@ -8,7 +8,7 @@ import scraperwiki
 import urllib2
 from datetime import datetime
 from bs4 import BeautifulSoup
-from splinter import Browser
+
 
 #### FUNCTIONS 1.2
 import requests
@@ -89,25 +89,12 @@ entity_id = "E1735_GBC_gov"
 url = "https://www.gosport.gov.uk/sections/your-council/transparency/invoices-over-500-pounds/"
 errors = 0
 data = []
-ua={'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36'}
+
 
 #### READ HTML 1.0
 
-with Browser("phantomjs") as browser:
-    # Optional, but make sure large enough that responsive pages don't
-    # hide elements on you...
-    browser.driver.set_window_size(1280, 1024)
-
-    # Open the page you want...
-    browser.visit(url)
-    # Scrape the data you like...
-    links = browser.find_by_xpath("//span[@class='pagination-next']/a")['href']
-    
-    print links
-    for link in links:
-        print link['href']
-# html = requests.get(url, verify=False)
-# soup = BeautifulSoup(html.text, 'lxml')
+html = requests.get(url)
+soup = BeautifulSoup(html.text, 'lxml')
 
 #### SCRAPE DATA
 
@@ -130,7 +117,7 @@ while next_link:
     if next_l:
         next_link =next_l.find('a', href=True)
         next_link = 'https://www.gosport.gov.uk/sections/your-council/transparency/invoices-over-500-pounds/'+next_link['href']
-        next_html = requests.get(next_link, verify=False)
+        next_html = requests.get(next_link)
         soup = BeautifulSoup(next_html.text, 'lxml')
     else:
         break
