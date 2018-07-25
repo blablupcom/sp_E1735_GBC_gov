@@ -112,8 +112,6 @@ class Tls12HttpAdapter(HTTPAdapter):
             block=block, ssl_version=ssl.PROTOCOL_TLSv1_2)
 
 
-url = sys.argv[1]
-
 s = requests.Session()
 s.mount('https://', Tls12HttpAdapter())
 r = s.get(url)
