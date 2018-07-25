@@ -101,8 +101,9 @@ with Browser("phantomjs") as browser:
     # Open the page you want...
     browser.visit(url)
     # Scrape the data you like...
-    links = browser.find_by_css(".pagination-next")
-    print links
+    links = browser.find_by_xpath("//span[@class='pagination-next']/a")
+    link = links.get_attribute('href')
+    print link
     for link in links:
         print link['href']
 # html = requests.get(url, verify=False)
