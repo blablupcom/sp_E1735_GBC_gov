@@ -102,19 +102,28 @@ from requests.utils import urlparse
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.poolmanager import PoolManager
 
-class Tls12HttpAdapter(HTTPAdapter):
-    """Transport adapter that forces use of TLSv1.2."""
+class TlsAdapter(HTTPAdapter):
 
-    def init_poolmanager(self, connections, maxsize, block=False):
-        """Create and initialize the urllib3 PoolManager."""
-        self.poolmanager = PoolManager(
-            num_pools=connections, maxsize=maxsize,
-            block=block, ssl_version=ssl.PROTOCOL_TLSv1	)
+    def __init__(self, ssl_options=0, **kwargs):
+        self.ssl_options = ssl_options
+        super(TlsAdapter, self).__init__(**kwargs)
 
-print ssl.OPENSSL_VERSION
-s = requests.Session()
-s.mount('https://', Tls12HttpAdapter())
-r = s.get(url, headers=ua)
+    def init_poolmanager(self, *pool_args, **pool_kwargs):
+        ctx = ssl_.create_urllib3_context(ssl.PROTOCOL_TLS)
+        # extend the default context options, which is to disable ssl2, ssl3
+        # and ssl compression, see:
+        # https://github.com/shazow/urllib3/blob/6a6cfe9/urllib3/util/ssl_.py#L241
+        ctx.options |= self.ssl_options
+        self.poolmanager = PoolManager(*pool_args,
+                                       ssl_context=ctx,
+                                       **pool_kwargs)
+
+session = requests.session()
+# disallow tls1.0 and tls1.1, allow only tls1.2 (and newer if suported by
+# the used openssl version)
+adapter = TlsAdapter(ssl.OP_NO_TLSv1 | ssl.OP_NO_TLSv1_1)
+session.mount("https://", adapter)
+r = session.get(url)
 print(r.status_code)
 
 
