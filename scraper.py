@@ -45,7 +45,6 @@ def validateURL(url):
             count += 1
             r = urllib2.urlopen(url)
         sourceFilename = r.headers.get('Content-Disposition')
-
         if sourceFilename:
             ext = os.path.splitext(sourceFilename)[1].replace('"', '').replace(';', '').replace(' ', '')
         else:
@@ -85,8 +84,8 @@ def convert_mth_strings ( mth_string ):
 
 #### VARIABLES 1.0
 
-entity_id = "E3632_EAEBC_gov"
-url = "https://www.epsom-ewell.gov.uk/council/about-council/financial-reports/payment-suppliers"
+entity_id = "E1735_GBC_gov"
+url = "https://www.gosport.gov.uk/sections/your-council/transparency/invoices-over-500-pounds/"
 errors = 0
 data = []
 
@@ -98,20 +97,29 @@ soup = BeautifulSoup(html, 'lxml')
 
 #### SCRAPE DATA
 
-
-links = soup.find('table', attrs = {'class': 'sticky-enabled'}).find_all('a')
-for link in links:
-    if 'http' not in link['href']:
-        url = 'https://www.epsom-ewell.gov.uk'+link['href']
+next_link = soup.find('span', attrs = {'class': 'pagination-next'}).find('a', href=True)
+while next_link:
+    ul_blocks = soup.find('table', attrs = {'class': 'DataGrid oDataGrid'}).find('tbody').find_all('tr')
+    for ul_block in ul_blocks:
+        pic = ul_block.find('img')['alt']
+        if 'text/csv' in pic:
+            file_name = ul_block.find_all('td')[1].text.strip()
+            csvMth = file_name.split('-')[1].strip()[:3]
+            csvYr = file_name.split('-')[1].strip().split()[1]
+            if 'http' not in ul_block.find_all('td')[-1].find('a')['href']:
+                url = 'https://www.gosport.gov.uk' + ul_block.find_all('td')[-1].find('a')['href']
+            else:
+                url = ul_block.find_all('td')[-1].find('a')['href']
+            csvMth = convert_mth_strings(csvMth.upper())
+            data.append([csvYr, csvMth, url])
+    next_l = soup.find('span', attrs={'class': 'pagination-next'})
+    if next_l:
+        next_link =next_l.find('a', href=True)
+        next_link = 'https://www.gosport.gov.uk/sections/your-council/transparency/invoices-over-500-pounds/'+next_link['href']
+        next_html = urllib2.urlopen(next_link)
+        soup = BeautifulSoup(next_html, 'lxml')
     else:
-        url = link['href']
-    file_name = link.text
-    if '.csv' in url:
-        csvMth = file_name[:3]
-        csvYr = file_name[-4:]
-        csvMth = convert_mth_strings(csvMth.upper())
-        data.append([csvYr, csvMth, url])
-
+        break
 
 #### STORE DATA 1.0
 
