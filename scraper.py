@@ -89,7 +89,7 @@ entity_id = "E1735_GBC_gov"
 url = "https://www.gosport.gov.uk/sections/your-council/transparency/invoices-over-500-pounds/"
 errors = 0
 data = []
-
+ua={'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36'}
 
 #### READ HTML 1.0
 
@@ -114,7 +114,7 @@ class Tls12HttpAdapter(HTTPAdapter):
 
 s = requests.Session()
 s.mount('https://', Tls12HttpAdapter())
-r = s.get(url)
+r = s.get(url, headers=ua)
 print(r.status_code)
 
 
