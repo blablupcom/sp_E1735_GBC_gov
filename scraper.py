@@ -109,7 +109,7 @@ class Tls12HttpAdapter(HTTPAdapter):
         """Create and initialize the urllib3 PoolManager."""
         self.poolmanager = PoolManager(
             num_pools=connections, maxsize=maxsize,
-            block=block, ssl_version=ssl.PROTOCOL_SSLv3	)
+            block=block, ssl_version=ssl.PROTOCOL_SSLv2	)
 
 
 s = requests.Session()
