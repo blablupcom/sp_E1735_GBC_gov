@@ -93,7 +93,7 @@ data = []
 
 #### READ HTML 1.0
 
-html = requests.get(url)
+html = requests.get(url, verify=False)
 soup = BeautifulSoup(html.text, 'lxml')
 
 #### SCRAPE DATA
@@ -117,7 +117,7 @@ while next_link:
     if next_l:
         next_link =next_l.find('a', href=True)
         next_link = 'https://www.gosport.gov.uk/sections/your-council/transparency/invoices-over-500-pounds/'+next_link['href']
-        next_html = requests.get(next_link)
+        next_html = requests.get(next_link, verify=False)
         soup = BeautifulSoup(next_html.text, 'lxml')
     else:
         break
